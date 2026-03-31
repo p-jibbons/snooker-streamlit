@@ -237,6 +237,8 @@ class SnookerGame:
     def end_turn(self) -> None:
         self.current_break = 0
         self.current_player = self.opponent_index
+        if not self.on_respotted_black and self.reds_remaining > 0:
+            self.expected_next = "red"
 
     def current_target_label(self) -> str:
         if self.phase == Phase.COMPLETE:

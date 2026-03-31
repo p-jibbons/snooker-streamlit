@@ -71,6 +71,16 @@ def test_miss_ends_turn_without_points():
     assert game.scores == [1, 0]
 
 
+def test_next_player_starts_on_red_after_turn_ends_during_colour_phase():
+    game = SnookerGame(player_names=["A", "B"])
+    game.pot_red()
+    assert game.expected_next == "colour"
+    game.miss()
+    assert game.current_player == 1
+    assert game.expected_next == "red"
+    assert game.next_ball_on == [Ball.RED]
+
+
 def test_points_remaining_drops_during_clearance():
     game = SnookerGame(player_names=["A", "B"], reds_remaining=0, expected_next="red")
     assert game.points_remaining == 27
