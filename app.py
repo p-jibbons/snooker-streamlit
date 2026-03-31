@@ -16,8 +16,6 @@ if "marketing" not in st.session_state:
     st.session_state.marketing = 0
 if "auto_clippers" not in st.session_state:
     st.session_state.auto_clippers = 0
-if "loop_enabled" not in st.session_state:
-    st.session_state.loop_enabled = False
 if "last_tick" not in st.session_state:
     st.session_state.last_tick = time.time()
 
@@ -41,8 +39,7 @@ def run_tick():
     st.session_state.last_tick = now
 
 
-if st.session_state.loop_enabled:
-    run_tick()
+run_tick()
 
 st.markdown(
     """
@@ -80,14 +77,6 @@ st.markdown(
 
 st.markdown("<div class='title'>Universal Paperclips</div>", unsafe_allow_html=True)
 st.markdown("<div class='subtitle'>A tiny playable mockup of the opening game state.</div>", unsafe_allow_html=True)
-
-loop_col, tick_col = st.columns([1, 1])
-with loop_col:
-    st.toggle("Run loop", key="loop_enabled")
-with tick_col:
-    if st.button("Advance one beat", use_container_width=True):
-        st.session_state.last_tick = time.time() - BEAT_SECONDS
-        run_tick()
 
 left, right = st.columns([1.1, 0.9])
 
@@ -151,6 +140,5 @@ else:
     st.caption(f"Demand is building. Current interest level: {demand}%")
 st.markdown("</div>", unsafe_allow_html=True)
 
-if st.session_state.loop_enabled:
-    time.sleep(BEAT_SECONDS)
-    st.rerun()
+time.sleep(BEAT_SECONDS)
+st.rerun()
