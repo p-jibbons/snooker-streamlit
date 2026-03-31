@@ -2,6 +2,17 @@ import streamlit as st
 
 st.set_page_config(page_title="Universal Paperclips Mockup", page_icon="📎", layout="centered")
 
+if "paperclips" not in st.session_state:
+    st.session_state.paperclips = 0
+if "funds" not in st.session_state:
+    st.session_state.funds = 0.0
+if "wire" not in st.session_state:
+    st.session_state.wire = 1000
+if "price" not in st.session_state:
+    st.session_state.price = 0.25
+if "marketing" not in st.session_state:
+    st.session_state.marketing = 0
+
 st.markdown(
     """
     <style>
@@ -37,41 +48,57 @@ st.markdown(
 )
 
 st.markdown("<div class='title'>Universal Paperclips</div>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>A tiny mockup of the opening game state.</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>A tiny playable mockup of the opening game state.</div>", unsafe_allow_html=True)
 
 left, right = st.columns([1.1, 0.9])
 
 with left:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown("<div class='label'>Paperclips</div>", unsafe_allow_html=True)
-    st.markdown("<div class='big'>0</div>", unsafe_allow_html=True)
-    st.button("Make Paperclip", use_container_width=True)
+    st.markdown(f"<div class='big'>{st.session_state.paperclips}</div>", unsafe_allow_html=True)
+    if st.button("Make Paperclip", use_container_width=True, disabled=st.session_state.wire <= 0):
+        st.session_state.paperclips += 1
+        st.session_state.funds += st.session_state.price
+        st.session_state.wire -= 1
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown("<div class='label'>Available Funds</div>", unsafe_allow_html=True)
-    st.markdown("<div class='big'>$0.00</div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='big'>${st.session_state.funds:,.2f}</div>", unsafe_allow_html=True)
     st.markdown("<div class='label' style='margin-top:0.75rem;'>Price per Clip</div>", unsafe_allow_html=True)
-    st.text_input("", value="$0.25", label_visibility="collapsed")
+    price_value = st.text_input("", value=f"${st.session_state.price:.2f}", label_visibility="collapsed")
+    try:
+        st.session_state.price = max(0.01, float(price_value.replace("$", "").strip()))
+    except ValueError:
+        pass
     st.markdown("</div>", unsafe_allow_html=True)
 
 with right:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown("<div class='label'>Marketing</div>", unsafe_allow_html=True)
-    st.markdown("<div class='big'>0</div>", unsafe_allow_html=True)
-    st.button("Buy Marketing", use_container_width=True, disabled=True)
+    st.markdown(f"<div class='big'>{st.session_state.marketing}</div>", unsafe_allow_html=True)
+    if st.button("Buy Marketing", use_container_width=True, disabled=st.session_state.funds < 100):
+        st.session_state.funds -= 100
+        st.session_state.marketing += 1
     st.markdown("<div class='label' style='margin-top:0.75rem;'>Cost: $100.00</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown("<div class='label'>Wire Inventory</div>", unsafe_allow_html=True)
-    st.markdown("<div class='big'>1,000 inches</div>", unsafe_allow_html=True)
-    st.button("Buy Wire", use_container_width=True, disabled=True)
+    st.markdown(f"<div class='big'>{st.session_state.wire:,} inches</div>", unsafe_allow_html=True)
+    if st.button("Buy Wire", use_container_width=True, disabled=st.session_state.funds < 20):
+        st.session_state.funds -= 20
+        st.session_state.wire += 1000
     st.markdown("<div class='label' style='margin-top:0.75rem;'>Cost: $20.00</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
+demand = min(100, st.session_state.paperclips // 2 + st.session_state.marketing * 10)
+
 st.markdown("<div class='panel'>", unsafe_allow_html=True)
 st.markdown("<div class='label'>Public Demand</div>", unsafe_allow_html=True)
-st.progress(0)
-st.caption("No demand yet. You have not sold any clips.")
+st.progress(demand)
+if demand == 0:
+    st.caption("No demand yet. You have not sold any clips.")
+else:
+    st.caption(f"Demand is building. Current interest level: {demand}%")
 st.markdown("</div>", unsafe_allow_html=True)
