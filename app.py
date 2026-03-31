@@ -6,7 +6,6 @@ from snooker.game import BALL_VALUES, Ball, SnookerGame
 from snooker.storage import (
     MATCH_FILE,
     SAVE_FILE,
-    leaderboard_rows,
     list_players,
     load_game,
     load_match_state,
@@ -161,7 +160,6 @@ init_state()
 game: SnookerGame = st.session_state.game
 match_state = st.session_state.match_state
 registered_players = list_players()
-leaderboard = leaderboard_rows()
 
 st.markdown(
     "<h1 style='color: #111111; font-weight: 800; margin-bottom: 0.1rem;'>Snooker Score</h1>",
@@ -274,14 +272,6 @@ if frame_history:
         winner = frame["winner_name"]
         p1_score, p2_score = frame["scores"]
         st.write(f"- Frame {frame['frame_number']}: {winner} won {p1_score}-{p2_score}")
-
-if leaderboard:
-    st.subheader("Leaderboard")
-    for idx, row in enumerate(leaderboard[:5], start=1):
-        st.write(
-            f"{idx}. {row['player']} — {row['wins']} frame win{'s' if row['wins'] != 1 else ''}"
-            f" from {row['played']} recorded frame{'s' if row['played'] != 1 else ''}"
-        )
 
 current = game.current_player
 other = 1 - current
