@@ -16,11 +16,26 @@ if "marketing" not in st.session_state:
     st.session_state.marketing = 0
 if "auto_clippers" not in st.session_state:
     st.session_state.auto_clippers = 0
+if "unsold_inventory" not in st.session_state:
+    st.session_state.unsold_inventory = 0
 if "last_tick" not in st.session_state:
     st.session_state.last_tick = time.time()
 
-
 BEAT_SECONDS = 0.35
+
+
+def demand_level() -> int:
+    price = st.session_state.price
+    marketing_bonus = st.session_state.marketing * 12
+    base = max(0, int(85 - price * 220))
+    return max(0, min(100, base + marketing_bonus))
+
+
+def sales_per_tick() -> int:
+    demand = demand_level()
+    if demand <= 0 or st.session_state.unsold_inventory <= 0:
+        return 0
+    return max(1, demand // 18)
 
 
 def run_tick():
@@ -34,8 +49,13 @@ def run_tick():
         if st.session_state.auto_clippers > 0 and st.session_state.wire > 0:
             produced = min(st.session_state.auto_clippers, st.session_state.wire)
             st.session_state.paperclips += produced
-            st.session_state.funds += produced * st.session_state.price
+            st.session_state.unsold_inventory += produced
             st.session_state.wire -= produced
+
+        sold = min(st.session_state.unsold_inventory, sales_per_tick())
+        st.session_state.unsold_inventory -= sold
+        st.session_state.funds += sold * st.session_state.price
+
     st.session_state.last_tick = now
 
 
@@ -82,23 +102,28 @@ left, right = st.columns([1.1, 0.9])
 
 with left:
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
-    st.markdown("<div class='label'>Paperclips</div>", unsafe_allow_html=True)
+    st.markdown("<div class='label'>Paperclips Made</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='big'>{st.session_state.paperclips}</div>", unsafe_allow_html=True)
     if st.button("Make Paperclip", use_container_width=True, disabled=st.session_state.wire <= 0):
         st.session_state.paperclips += 1
-        st.session_state.funds += st.session_state.price
+        st.session_state.unsold_inventory += 1
         st.session_state.wire -= 1
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='panel'>", unsafe_allow_html=True)
     st.markdown("<div class='label'>Available Funds</div>", unsafe_allow_html=True)
     st.markdown(f"<div class='big'>${st.session_state.funds:,.2f}</div>", unsafe_allow_html=True)
-    st.markdown("<div class='label' style='margin-top:0.75rem;'>Price per Clip</div>", unsafe_allow_html=True)
-    price_value = st.text_input("", value=f"${st.session_state.price:.2f}", label_visibility="collapsed")
-    try:
-        st.session_state.price = max(0.01, float(price_value.replace("$", "").strip()))
-    except ValueError:
-        pass
+    st.markdown("<div class='label' style='margin-top:0.75rem;'>Sale Price per Clip</div>", unsafe_allow_html=True)
+    st.session_state.price = st.slider(
+        "Sale Price per Clip",
+        min_value=0.01,
+        max_value=1.00,
+        value=float(st.session_state.price),
+        step=0.01,
+        format="$%.2f",
+        label_visibility="collapsed",
+    )
+    st.caption(f"Lower prices increase demand. Higher prices slow sales.")
     st.markdown("</div>", unsafe_allow_html=True)
 
 with right:
@@ -129,15 +154,21 @@ if st.button("Buy AutoClippers", use_container_width=True, disabled=st.session_s
 st.caption("Each AutoClipper makes 1 paperclip per beat if wire is available.")
 st.markdown("</div>", unsafe_allow_html=True)
 
-demand = min(100, st.session_state.paperclips // 2 + st.session_state.marketing * 10)
+demand = demand_level()
+sold_each_tick = sales_per_tick()
+
+stats = st.columns(3)
+stats[0].metric("Unsold inventory", st.session_state.unsold_inventory)
+stats[1].metric("Demand", f"{demand}%")
+stats[2].metric("Sales / beat", sold_each_tick)
 
 st.markdown("<div class='panel'>", unsafe_allow_html=True)
 st.markdown("<div class='label'>Public Demand</div>", unsafe_allow_html=True)
 st.progress(demand)
 if demand == 0:
-    st.caption("No demand yet. You have not sold any clips.")
+    st.caption("Demand has collapsed at this price. Lower the price or add marketing.")
 else:
-    st.caption(f"Demand is building. Current interest level: {demand}%")
+    st.caption(f"Current market demand is {demand}%. At this price, about {sold_each_tick} clip(s) sell each beat.")
 st.markdown("</div>", unsafe_allow_html=True)
 
 time.sleep(BEAT_SECONDS)
