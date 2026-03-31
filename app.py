@@ -22,13 +22,16 @@ if "last_tick" not in st.session_state:
     st.session_state.last_tick = time.time()
 
 
+BEAT_SECONDS = 0.35
+
+
 def run_tick():
     now = time.time()
     elapsed = now - st.session_state.last_tick
-    if elapsed < 1.0:
+    if elapsed < BEAT_SECONDS:
         return
 
-    ticks = int(elapsed)
+    ticks = int(elapsed / BEAT_SECONDS)
     for _ in range(ticks):
         if st.session_state.auto_clippers > 0 and st.session_state.wire > 0:
             produced = min(st.session_state.auto_clippers, st.session_state.wire)
@@ -83,7 +86,7 @@ with loop_col:
     st.toggle("Run loop", key="loop_enabled")
 with tick_col:
     if st.button("Advance one beat", use_container_width=True):
-        st.session_state.last_tick = time.time() - 1
+        st.session_state.last_tick = time.time() - BEAT_SECONDS
         run_tick()
 
 left, right = st.columns([1.1, 0.9])
@@ -149,5 +152,5 @@ else:
 st.markdown("</div>", unsafe_allow_html=True)
 
 if st.session_state.loop_enabled:
-    time.sleep(1)
+    time.sleep(BEAT_SECONDS)
     st.rerun()
