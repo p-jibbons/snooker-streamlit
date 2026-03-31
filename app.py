@@ -163,7 +163,10 @@ match_state = st.session_state.match_state
 registered_players = list_players()
 leaderboard = leaderboard_rows()
 
-st.title("🎱 Snooker Scoreboard")
+st.markdown(
+    "<h1 style='color: #666666; font-weight: 800; margin-bottom: 0.1rem;'>🎱 Snooker Scoreboard</h1>",
+    unsafe_allow_html=True,
+)
 st.caption("Rule-aware snooker scoreboard with frame logic, local saves, lightweight match tracking, simple player registration, and registered-player assignment.")
 
 with st.sidebar:
