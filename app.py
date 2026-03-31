@@ -247,10 +247,25 @@ with st.sidebar:
     st.caption("Tracks a standard two-player frame, including red/colour order, ordered clearance, re-spotted black, fouls, breaks, snookers-required pressure, local persistence, running match score, simple player registration, and registered-player assignment.")
 
 st.subheader("Match score")
-match_cols = st.columns(3)
-match_cols[0].metric(match_state["player_names"][0], match_state["frames_won"][0])
-match_cols[1].metric(match_state["player_names"][1], match_state["frames_won"][1])
-match_cols[2].metric("Frames to win", frames_needed_to_win(match_state["best_of"]))
+st.markdown(
+    f"""
+    <div style='display: flex; gap: 0.75rem; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 0.75rem;'>
+        <div style='flex: 1 1 0; min-width: 110px; border: 1px solid #e6e6e6; border-radius: 0.75rem; padding: 0.9rem 1rem; background: #fafafa;'>
+            <div style='font-size: 0.9rem; color: #666;'>{match_state['player_names'][0]}</div>
+            <div style='font-size: 2.1rem; font-weight: 800; line-height: 1.1;'>{match_state['frames_won'][0]}</div>
+        </div>
+        <div style='flex: 1 1 0; min-width: 110px; border: 1px solid #e6e6e6; border-radius: 0.75rem; padding: 0.9rem 1rem; background: #fafafa;'>
+            <div style='font-size: 0.9rem; color: #666;'>{match_state['player_names'][1]}</div>
+            <div style='font-size: 2.1rem; font-weight: 800; line-height: 1.1;'>{match_state['frames_won'][1]}</div>
+        </div>
+        <div style='flex: 1 1 0; min-width: 110px; border: 1px solid #dbeafe; border-radius: 0.75rem; padding: 0.9rem 1rem; background: #eff6ff;'>
+            <div style='font-size: 0.9rem; color: #4b5563;'>Frames to win</div>
+            <div style='font-size: 2.1rem; font-weight: 800; line-height: 1.1;'>{frames_needed_to_win(match_state['best_of'])}</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 st.info(match_summary())
 
 frame_history = match_state.get("frame_history", [])
