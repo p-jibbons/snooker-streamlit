@@ -84,8 +84,33 @@ for i in range(days):
     )
 
 df = pd.DataFrame(rows)
-chart_df = df.set_index("date")[["users", "revenue"]]
-st.line_chart(chart_df)
+
+chart_cols = st.columns(2)
+with chart_cols[0]:
+    st.markdown("**User growth**")
+    peak_users = max(df["users"].max(), 1)
+    for _, row in df.tail(min(days, 12)).iterrows():
+        width_pct = max(8, int((row["users"] / peak_users) * 100))
+        st.markdown(
+            f"<div style='margin-bottom:0.35rem'><div style='font-size:0.82rem;color:#6b7280'>{row['date']}</div>"
+            f"<div style='background:#e5e7eb;border-radius:999px;height:14px;overflow:hidden'>"
+            f"<div style='width:{width_pct}%;background:linear-gradient(90deg,#2563eb,#60a5fa);height:14px'></div></div>"
+            f"<div style='font-size:0.82rem;font-weight:600'>{int(row['users']):,} users</div></div>",
+            unsafe_allow_html=True,
+        )
+
+with chart_cols[1]:
+    st.markdown("**Revenue growth**")
+    peak_revenue = max(df["revenue"].max(), 1)
+    for _, row in df.tail(min(days, 12)).iterrows():
+        width_pct = max(8, int((row["revenue"] / peak_revenue) * 100))
+        st.markdown(
+            f"<div style='margin-bottom:0.35rem'><div style='font-size:0.82rem;color:#6b7280'>{row['date']}</div>"
+            f"<div style='background:#e5e7eb;border-radius:999px;height:14px;overflow:hidden'>"
+            f"<div style='width:{width_pct}%;background:linear-gradient(90deg,#059669,#34d399);height:14px'></div></div>"
+            f"<div style='font-size:0.82rem;font-weight:600'>${row['revenue']:,.0f}</div></div>",
+            unsafe_allow_html=True,
+        )
 
 left, right = st.columns([1.3, 1])
 with left:
