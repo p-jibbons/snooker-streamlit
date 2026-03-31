@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment and local secrets
+.env
+.env.*
+
+# Streamlit local secrets
+.streamlit/secrets.toml
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+
+# Runtime app state (auto-generated)
+data/current_frame.json
+data/match_state.json
+data/snooker.db
