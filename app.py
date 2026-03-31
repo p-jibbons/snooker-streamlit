@@ -21,7 +21,7 @@ if "unsold_inventory" not in st.session_state:
 if "last_tick" not in st.session_state:
     st.session_state.last_tick = time.time()
 
-BEAT_SECONDS = 0.35
+BEAT_SECONDS = 1.5
 
 
 def demand_level() -> int:
