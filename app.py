@@ -1,3 +1,5 @@
+import time
+
 import streamlit as st
 
 st.set_page_config(page_title="Universal Paperclips Mockup", page_icon="📎", layout="centered")
@@ -12,6 +14,32 @@ if "price" not in st.session_state:
     st.session_state.price = 0.25
 if "marketing" not in st.session_state:
     st.session_state.marketing = 0
+if "auto_clippers" not in st.session_state:
+    st.session_state.auto_clippers = 0
+if "loop_enabled" not in st.session_state:
+    st.session_state.loop_enabled = False
+if "last_tick" not in st.session_state:
+    st.session_state.last_tick = time.time()
+
+
+def run_tick():
+    now = time.time()
+    elapsed = now - st.session_state.last_tick
+    if elapsed < 1.0:
+        return
+
+    ticks = int(elapsed)
+    for _ in range(ticks):
+        if st.session_state.auto_clippers > 0 and st.session_state.wire > 0:
+            produced = min(st.session_state.auto_clippers, st.session_state.wire)
+            st.session_state.paperclips += produced
+            st.session_state.funds += produced * st.session_state.price
+            st.session_state.wire -= produced
+    st.session_state.last_tick = now
+
+
+if st.session_state.loop_enabled:
+    run_tick()
 
 st.markdown(
     """
@@ -49,6 +77,14 @@ st.markdown(
 
 st.markdown("<div class='title'>Universal Paperclips</div>", unsafe_allow_html=True)
 st.markdown("<div class='subtitle'>A tiny playable mockup of the opening game state.</div>", unsafe_allow_html=True)
+
+loop_col, tick_col = st.columns([1, 1])
+with loop_col:
+    st.toggle("Run loop", key="loop_enabled")
+with tick_col:
+    if st.button("Advance one beat", use_container_width=True):
+        st.session_state.last_tick = time.time() - 1
+        run_tick()
 
 left, right = st.columns([1.1, 0.9])
 
@@ -92,6 +128,15 @@ with right:
     st.markdown("<div class='label' style='margin-top:0.75rem;'>Cost: $20.00</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
+st.markdown("<div class='panel'>", unsafe_allow_html=True)
+st.markdown("<div class='label'>Automatic Wire Cutters</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='big'>{st.session_state.auto_clippers}</div>", unsafe_allow_html=True)
+if st.button("Buy AutoClippers", use_container_width=True, disabled=st.session_state.funds < 5):
+    st.session_state.funds -= 5
+    st.session_state.auto_clippers += 1
+st.caption("Each AutoClipper makes 1 paperclip per beat if wire is available.")
+st.markdown("</div>", unsafe_allow_html=True)
+
 demand = min(100, st.session_state.paperclips // 2 + st.session_state.marketing * 10)
 
 st.markdown("<div class='panel'>", unsafe_allow_html=True)
@@ -102,3 +147,7 @@ if demand == 0:
 else:
     st.caption(f"Demand is building. Current interest level: {demand}%")
 st.markdown("</div>", unsafe_allow_html=True)
+
+if st.session_state.loop_enabled:
+    time.sleep(1)
+    st.rerun()
