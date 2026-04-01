@@ -11,15 +11,18 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+REFRESH_SECONDS = 1.0
+
 st.markdown(
-    """
+    f"""
+    <meta http-equiv="refresh" content="{REFRESH_SECONDS}">
     <style>
         .stApp {
             background:
-                radial-gradient(circle at top left, rgba(244, 114, 182, 0.12), transparent 24%),
-                radial-gradient(circle at top right, rgba(56, 189, 248, 0.13), transparent 26%),
-                linear-gradient(180deg, #0b1120 0%, #111827 42%, #172033 100%);
-            color: #f8fafc;
+                radial-gradient(circle at top left, rgba(253, 224, 71, 0.22), transparent 24%),
+                radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 30%),
+                linear-gradient(180deg, #d9f99d 0%, #86efac 30%, #4ade80 62%, #22c55e 100%);
+            color: #1f2937;
         }
         .block-container {
             max-width: 1150px;
@@ -29,19 +32,19 @@ st.markdown(
         .hero {
             border-radius: 28px;
             padding: 2rem;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.86));
-            border: 1px solid rgba(148, 163, 184, 0.16);
-            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+            background: linear-gradient(135deg, rgba(254, 249, 195, 0.95), rgba(187, 247, 208, 0.92));
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            box-shadow: 0 18px 60px rgba(34, 197, 94, 0.18);
             margin-bottom: 1rem;
         }
         .hero h1 {
             margin: 0;
             font-size: 2.9rem;
-            color: #fff7ed;
+            color: #14532d;
         }
         .hero p {
             margin-top: 0.7rem;
-            color: #dbeafe;
+            color: #166534;
             font-size: 1.02rem;
             max-width: 800px;
         }
@@ -54,106 +57,106 @@ st.markdown(
         .pill {
             padding: 0.42rem 0.82rem;
             border-radius: 999px;
-            background: rgba(251, 191, 36, 0.12);
-            border: 1px solid rgba(251, 191, 36, 0.24);
-            color: #fde68a;
+            background: rgba(254, 240, 138, 0.7);
+            border: 1px solid rgba(234, 179, 8, 0.35);
+            color: #854d0e;
             font-size: 0.9rem;
         }
         .panel {
-            background: rgba(15, 23, 42, 0.74);
-            border: 1px solid rgba(148, 163, 184, 0.15);
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(34, 197, 94, 0.18);
             border-radius: 22px;
             padding: 1rem 1.1rem;
-            box-shadow: 0 14px 36px rgba(0,0,0,0.18);
+            box-shadow: 0 14px 36px rgba(0,0,0,0.12);
         }
         .metric-card {
             border-radius: 20px;
             padding: 1rem;
-            background: linear-gradient(180deg, rgba(30,41,59,0.95), rgba(15,23,42,0.86));
-            border: 1px solid rgba(148, 163, 184, 0.14);
+            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(236,253,245,0.9));
+            border: 1px solid rgba(34, 197, 94, 0.16);
             min-height: 112px;
         }
         .metric-label {
-            color: #94a3b8;
+            color: #15803d;
             font-size: 0.84rem;
             text-transform: uppercase;
             letter-spacing: 0.09em;
         }
         .metric-value {
-            color: #fef3c7;
+            color: #854d0e;
             font-size: 2rem;
             font-weight: 800;
             margin-top: 0.32rem;
         }
         .metric-sub {
-            color: #cbd5e1;
+            color: #166534;
             font-size: 0.92rem;
             margin-top: 0.15rem;
         }
         .cow-card, .upgrade-card, .log-card {
-            background: linear-gradient(180deg, rgba(22, 30, 46, 0.95), rgba(15, 23, 42, 0.82));
-            border: 1px solid rgba(148, 163, 184, 0.14);
+            background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(240,253,244,0.92));
+            border: 1px solid rgba(34, 197, 94, 0.14);
             border-radius: 20px;
             padding: 1rem;
             margin-bottom: 0.8rem;
         }
         .section-title {
-            color: #f8fafc;
+            color: #14532d;
             margin-bottom: 0.8rem;
         }
         .cow-name {
             font-size: 1.08rem;
             font-weight: 700;
-            color: #f8fafc;
+            color: #14532d;
         }
         .cow-meta, .upgrade-meta {
-            color: #cbd5e1;
+            color: #166534;
             font-size: 0.92rem;
         }
         .barn-log {
             padding: 0.85rem 0.95rem;
             border-radius: 16px;
-            background: rgba(15, 23, 42, 0.55);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            color: #dbeafe;
+            background: rgba(254, 252, 232, 0.92);
+            border: 1px solid rgba(234, 179, 8, 0.18);
+            color: #365314;
             margin-bottom: 0.5rem;
         }
         .tip {
             margin-top: 0.9rem;
             padding: 0.85rem 1rem;
             border-radius: 16px;
-            background: rgba(16, 185, 129, 0.09);
-            border: 1px solid rgba(52, 211, 153, 0.22);
-            color: #d1fae5;
+            background: rgba(250, 204, 21, 0.12);
+            border: 1px solid rgba(234, 179, 8, 0.25);
+            color: #713f12;
         }
         .stButton > button {
-            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%) !important;
-            color: #0f172a !important;
-            border: 1px solid rgba(148, 163, 184, 0.5) !important;
+            background: linear-gradient(180deg, #fef08a 0%, #facc15 100%) !important;
+            color: #365314 !important;
+            border: 1px solid rgba(234, 179, 8, 0.55) !important;
             border-radius: 12px !important;
             font-weight: 700 !important;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22) !important;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12) !important;
         }
         .stButton > button:hover {
-            background: linear-gradient(180deg, #ffffff 0%, #dbeafe 100%) !important;
-            color: #020617 !important;
-            border-color: rgba(96, 165, 250, 0.6) !important;
+            background: linear-gradient(180deg, #fde047 0%, #eab308 100%) !important;
+            color: #365314 !important;
+            border-color: rgba(132, 204, 22, 0.8) !important;
         }
         .stButton > button p,
         .stButton > button span,
         .stButton > button div {
-            color: #0f172a !important;
+            color: #365314 !important;
             font-weight: 700 !important;
         }
         .stButton > button[kind="primary"] {
-            background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%) !important;
-            color: #1f2937 !important;
-            border: 1px solid rgba(245, 158, 11, 0.7) !important;
+            background: linear-gradient(180deg, #86efac 0%, #4ade80 100%) !important;
+            color: #14532d !important;
+            border: 1px solid rgba(34, 197, 94, 0.7) !important;
         }
         .stButton > button[kind="primary"] p,
         .stButton > button[kind="primary"] span,
         .stButton > button[kind="primary"] div {
-            color: #1f2937 !important;
+            color: #14532d !important;
         }
     </style>
     """,
@@ -174,8 +177,8 @@ UPGRADES = {
     },
     "auto_milker": {
         "label": "Auto-Milker",
-        "base_cost": 50,
-        "desc": "+0.8 milk/sec from automation.",
+        "base_cost": 18,
+        "desc": "+2.4 milk/sec from early automation and score pressure.",
     },
     "premium_feed": {
         "label": "Premium Feed",
@@ -238,7 +241,7 @@ def add_cow(auto: bool = False):
 def initial_game():
     return {
         "milk": 0.0,
-        "coins": 30.0,
+        "coins": 20.0,
         "lifetime_milk": 0.0,
         "click_power": 1.0,
         "capacity": 4,
@@ -262,7 +265,7 @@ def ensure_game():
 def milk_per_second() -> float:
     game = st.session_state.game
     herd_rate = sum(cow["base_rate"] * (0.65 + cow["happiness"] / 10) for cow in game["cows"])
-    auto = game["upgrades"]["auto_milker"] * 0.8 + game["upgrades"]["barn_robot"] * 2.0
+    auto = game["upgrades"]["auto_milker"] * 2.4 + game["upgrades"]["barn_robot"] * 2.0
     multiplier = 1 + game["upgrades"]["premium_feed"] * 0.15 + game["upgrades"]["moon_silo"] * 0.35
     return (herd_rate + auto) * multiplier
 
@@ -301,15 +304,15 @@ ensure_game()
 tick_game()
 game = st.session_state.game
 rate = milk_per_second()
+game_score = game["lifetime_milk"] + game["upgrades"]["auto_milker"] * 120 + game["upgrades"]["barn_robot"] * 220
 
 st.markdown(
     """
     <div class="hero">
         <h1>🐄 Idle Moo Empire</h1>
         <p>
-            Build a ridiculous passive-income dairy operation. Tap to milk, hire automation,
-            expand the barn, stack upgrades, and let the cows generate wealth while you bask in
-            the soft glow of agricultural absurdity.
+            Build a bright, cheerful dairy empire. Tap to milk, unlock the auto-milker almost
+            immediately, expand the barn, stack upgrades, and watch your farm score climb on its own.
         </p>
         <div class="pill-row">
             <div class="pill">Idle game</div>
@@ -322,15 +325,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-m1, m2, m3, m4, m5 = st.columns(5)
+m1, m2, m3, m4, m5, m6 = st.columns(6)
 metrics = [
     ("Milk", format_num(game["milk"]), "Current liquid glory"),
     ("Coins", format_num(game["coins"]), "Spend to scale the ranch"),
     ("Milk / sec", format_num(rate), "Passive production rate"),
+    ("Farm score", format_num(game_score), "Your overall idle progress"),
     ("Cows", f"{len(game['cows'])}/{game['capacity']}", "Occupied stalls"),
     ("Lifetime milk", format_num(game["lifetime_milk"]), "All-time output"),
 ]
-for col, (label, value, sub) in zip([m1, m2, m3, m4, m5], metrics):
+for col, (label, value, sub) in zip([m1, m2, m3, m4, m5, m6], metrics):
     with col:
         st.markdown(
             f"""
@@ -349,6 +353,7 @@ with left:
     st.markdown("## Milking floor")
     st.markdown('<div class="panel">', unsafe_allow_html=True)
     st.markdown(f"**Barn status:** {game['theme_msg']}")
+    st.caption(f"The farm loop updates automatically every {int(REFRESH_SECONDS)} second.")
 
     if st.button(f"🥛 Milk the herd manually (+{format_num(game['click_power'])})", use_container_width=True, type="primary"):
         game["milk"] += game["click_power"]
@@ -419,7 +424,10 @@ with right:
                             cow["happiness"] = min(10, cow["happiness"] + 1)
                     if key == "barn_robot":
                         game["click_power"] += 1.5
-                    add_log(f"Purchased {details['label']} level {game['upgrades'][key]}.")
+                    if key == "auto_milker":
+                        add_log("The auto-milker clanks to life. Your farm score starts sprinting upward.")
+                    else:
+                        add_log(f"Purchased {details['label']} level {game['upgrades'][key]}.")
                 else:
                     add_log(f"Need {cost} coins for {details['label']}.")
         st.markdown('</div>', unsafe_allow_html=True)
@@ -453,8 +461,8 @@ with right:
     st.markdown(
         """
         <div class="tip">
-            <strong>Idle strategy:</strong> buy early passive income first, then add stall capacity,
-            then scale with multipliers. Tiny dairy capitalism rewards patience.
+            <strong>Idle strategy:</strong> grab the early auto-milker first, then add stall capacity,
+            then scale with multipliers. Happy cows and lazy automation make the score explode.
         </div>
         """,
         unsafe_allow_html=True,
