@@ -1,10 +1,12 @@
+import math
 import random
+import time
 
 import streamlit as st
 
 st.set_page_config(
-    page_title="Moonmilk Ranch",
-    page_icon="🐮",
+    page_title="Idle Moo Empire",
+    page_icon="🐄",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -14,34 +16,34 @@ st.markdown(
     <style>
         .stApp {
             background:
-                radial-gradient(circle at top left, rgba(253, 224, 71, 0.15), transparent 25%),
-                radial-gradient(circle at top right, rgba(45, 212, 191, 0.12), transparent 30%),
-                linear-gradient(180deg, #0f172a 0%, #152238 45%, #1e293b 100%);
+                radial-gradient(circle at top left, rgba(244, 114, 182, 0.12), transparent 24%),
+                radial-gradient(circle at top right, rgba(56, 189, 248, 0.13), transparent 26%),
+                linear-gradient(180deg, #0b1120 0%, #111827 42%, #172033 100%);
             color: #f8fafc;
         }
         .block-container {
-            max-width: 1120px;
-            padding-top: 1.6rem;
-            padding-bottom: 2.5rem;
+            max-width: 1150px;
+            padding-top: 1.4rem;
+            padding-bottom: 2.8rem;
         }
         .hero {
             border-radius: 28px;
             padding: 2rem;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.82));
-            border: 1px solid rgba(148, 163, 184, 0.18);
-            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.86));
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
             margin-bottom: 1rem;
         }
         .hero h1 {
             margin: 0;
-            font-size: 2.8rem;
+            font-size: 2.9rem;
             color: #fff7ed;
         }
         .hero p {
             margin-top: 0.7rem;
             color: #dbeafe;
             font-size: 1.02rem;
-            max-width: 750px;
+            max-width: 800px;
         }
         .pill-row {
             display: flex;
@@ -53,64 +55,68 @@ st.markdown(
             padding: 0.42rem 0.82rem;
             border-radius: 999px;
             background: rgba(251, 191, 36, 0.12);
-            border: 1px solid rgba(251, 191, 36, 0.25);
+            border: 1px solid rgba(251, 191, 36, 0.24);
             color: #fde68a;
             font-size: 0.9rem;
         }
         .panel {
-            background: rgba(15, 23, 42, 0.72);
-            border: 1px solid rgba(148, 163, 184, 0.16);
+            background: rgba(15, 23, 42, 0.74);
+            border: 1px solid rgba(148, 163, 184, 0.15);
             border-radius: 22px;
             padding: 1rem 1.1rem;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+            box-shadow: 0 14px 36px rgba(0,0,0,0.18);
         }
         .metric-card {
             border-radius: 20px;
             padding: 1rem;
-            background: linear-gradient(180deg, rgba(30,41,59,0.92), rgba(15,23,42,0.85));
-            border: 1px solid rgba(148, 163, 184, 0.15);
-            min-height: 110px;
+            background: linear-gradient(180deg, rgba(30,41,59,0.95), rgba(15,23,42,0.86));
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            min-height: 112px;
         }
         .metric-label {
             color: #94a3b8;
-            font-size: 0.88rem;
+            font-size: 0.84rem;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.09em;
         }
         .metric-value {
             color: #fef3c7;
             font-size: 2rem;
             font-weight: 800;
-            margin-top: 0.35rem;
+            margin-top: 0.32rem;
         }
         .metric-sub {
             color: #cbd5e1;
             font-size: 0.92rem;
-            margin-top: 0.18rem;
+            margin-top: 0.15rem;
         }
-        .cow-card {
+        .cow-card, .upgrade-card, .log-card {
             background: linear-gradient(180deg, rgba(22, 30, 46, 0.95), rgba(15, 23, 42, 0.82));
-            border: 1px solid rgba(148, 163, 184, 0.16);
+            border: 1px solid rgba(148, 163, 184, 0.14);
             border-radius: 20px;
             padding: 1rem;
-            margin-bottom: 0.85rem;
+            margin-bottom: 0.8rem;
+        }
+        .section-title {
+            color: #f8fafc;
+            margin-bottom: 0.8rem;
         }
         .cow-name {
-            font-size: 1.12rem;
+            font-size: 1.08rem;
             font-weight: 700;
             color: #f8fafc;
         }
-        .cow-meta {
+        .cow-meta, .upgrade-meta {
             color: #cbd5e1;
             font-size: 0.92rem;
         }
         .barn-log {
-            padding: 0.9rem 1rem;
+            padding: 0.85rem 0.95rem;
             border-radius: 16px;
             background: rgba(15, 23, 42, 0.55);
-            border: 1px solid rgba(148, 163, 184, 0.12);
+            border: 1px solid rgba(148, 163, 184, 0.1);
             color: #dbeafe;
-            margin-bottom: 0.55rem;
+            margin-bottom: 0.5rem;
         }
         .tip {
             margin-top: 0.9rem;
@@ -132,12 +138,6 @@ st.markdown(
             background: linear-gradient(180deg, #ffffff 0%, #dbeafe 100%) !important;
             color: #020617 !important;
             border-color: rgba(96, 165, 250, 0.6) !important;
-        }
-        .stButton > button:focus,
-        .stButton > button:focus-visible {
-            color: #020617 !important;
-            outline: none !important;
-            box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.28) !important;
         }
         .stButton > button p,
         .stButton > button span,
@@ -161,81 +161,161 @@ st.markdown(
 )
 
 COW_NAMES = [
-    "Bessie", "Mochi", "Daisy", "Nugget", "Pepper", "Luna", "Butters", "Clover",
-    "Pudding", "Maple", "Junebug", "Truffle", "Hazel", "Toffee", "Mabel", "Sprout",
+    "Bessie", "Mochi", "Daisy", "Maple", "Clover", "Pepper", "Truffle", "Toffee",
+    "Pudding", "Sprout", "Mabel", "Hazel", "Junebug", "Butters", "Nugget", "Luna",
 ]
-MOODS = ["sleepy", "bouncy", "dramatic", "focused", "chaotic", "delighted"]
-EVENTS = [
-    ("A local café placed a surprise milk order.", 18),
-    ("One of the cows kicked over a bucket in protest.", -10),
-    ("A golden patch of clover boosted the herd's mood.", 12),
-    ("The moon glowed weirdly and milk output got extra frothy.", 15),
-    ("A raccoon snuck into the barn and stole snacks.", -8),
-    ("Tourists stopped by and tipped for selfies with the cows.", 14),
-]
+MOODS = ["sleepy", "content", "chaotic", "focused", "dramatic", "sparkly"]
+
 UPGRADES = {
-    "Comfy Barn": {"cost": 60, "effect": "Cows gain +1 happiness each turn."},
-    "Turbo Milker": {"cost": 90, "effect": "Milking yields +6 extra milk."},
-    "Fancy Feed": {"cost": 45, "effect": "Feeding restores +2 extra happiness."},
+    "extra_stall": {
+        "label": "Extra Stall",
+        "base_cost": 25,
+        "desc": "+1 cow capacity and +0.3 milk/sec.",
+    },
+    "auto_milker": {
+        "label": "Auto-Milker",
+        "base_cost": 50,
+        "desc": "+0.8 milk/sec from automation.",
+    },
+    "premium_feed": {
+        "label": "Premium Feed",
+        "base_cost": 40,
+        "desc": "+15% milk production.",
+    },
+    "barn_robot": {
+        "label": "Barn Robot",
+        "base_cost": 120,
+        "desc": "+2.0 milk/sec and happier cows.",
+    },
+    "moon_silo": {
+        "label": "Moon Silo",
+        "base_cost": 220,
+        "desc": "+35% milk production.",
+    },
 }
 
 
-def init_game():
-    if "game" in st.session_state:
-        return
-    st.session_state.game = {
-        "day": 1,
-        "coins": 120,
-        "milk": 20,
-        "hay": 12,
-        "score": 0,
-        "upgrades": [],
-        "log": ["Welcome to Moonmilk Ranch. The barn smells like ambition and hay."],
-        "cows": [
-            {"name": "Bessie", "happiness": 7, "energy": 6, "milk_ready": 8, "mood": "sleepy"},
-            {"name": "Mochi", "happiness": 8, "energy": 7, "milk_ready": 6, "mood": "bouncy"},
-            {"name": "Daisy", "happiness": 6, "energy": 8, "milk_ready": 7, "mood": "dramatic"},
-        ],
-    }
+def format_num(value: float) -> str:
+    if value >= 1_000_000:
+        return f"{value/1_000_000:.2f}M"
+    if value >= 1_000:
+        return f"{value/1_000:.2f}K"
+    if value >= 100:
+        return f"{value:.0f}"
+    return f"{value:.1f}"
+
+
+def next_upgrade_cost(key: str, level: int) -> int:
+    base = UPGRADES[key]["base_cost"]
+    return math.ceil(base * (1.55 ** level))
 
 
 def add_log(message: str):
-    st.session_state.game["log"].insert(0, message)
-    st.session_state.game["log"] = st.session_state.game["log"][:8]
-
-
-def next_day():
     game = st.session_state.game
-    game["day"] += 1
-    bonus_happiness = 1 if "Comfy Barn" in game["upgrades"] else 0
-
-    for cow in game["cows"]:
-        cow["energy"] = max(2, min(10, cow["energy"] + random.randint(-1, 2)))
-        cow["happiness"] = max(1, min(10, cow["happiness"] + random.randint(-1, 1) + bonus_happiness))
-        cow["milk_ready"] = max(2, min(12, cow["milk_ready"] + random.randint(1, 3)))
-        cow["mood"] = random.choice(MOODS)
-
-    event_text, coin_delta = random.choice(EVENTS)
-    game["coins"] = max(0, game["coins"] + coin_delta)
-    add_log(f"Day {game['day']}: {event_text} ({coin_delta:+} coins)")
+    game["log"].insert(0, message)
+    game["log"] = game["log"][:10]
 
 
-init_game()
+def add_cow(auto: bool = False):
+    game = st.session_state.game
+    used = {cow["name"] for cow in game["cows"]}
+    choices = [name for name in COW_NAMES if name not in used] or COW_NAMES
+    name = random.choice(choices)
+    game["cows"].append(
+        {
+            "name": name,
+            "base_rate": round(random.uniform(0.7, 1.4), 2),
+            "mood": random.choice(MOODS),
+            "happiness": random.randint(5, 9),
+        }
+    )
+    if auto:
+        add_log(f"A new cow, {name}, wandered in and decided to stay.")
+    else:
+        add_log(f"You bought {name}. The herd immediately started judging your management style.")
+
+
+def initial_game():
+    return {
+        "milk": 0.0,
+        "coins": 30.0,
+        "lifetime_milk": 0.0,
+        "click_power": 1.0,
+        "capacity": 4,
+        "upgrades": {key: 0 for key in UPGRADES},
+        "cows": [
+            {"name": "Bessie", "base_rate": 1.0, "mood": "content", "happiness": 8},
+            {"name": "Mochi", "base_rate": 0.9, "mood": "sleepy", "happiness": 7},
+        ],
+        "last_tick": time.time(),
+        "log": ["Moonlight hits the barn roof. The idle milk empire begins."],
+        "tick_count": 0,
+        "theme_msg": "The herd is calm. Suspiciously calm.",
+    }
+
+
+def ensure_game():
+    if "game" not in st.session_state:
+        st.session_state.game = initial_game()
+
+
+def milk_per_second() -> float:
+    game = st.session_state.game
+    herd_rate = sum(cow["base_rate"] * (0.65 + cow["happiness"] / 10) for cow in game["cows"])
+    auto = game["upgrades"]["auto_milker"] * 0.8 + game["upgrades"]["barn_robot"] * 2.0
+    multiplier = 1 + game["upgrades"]["premium_feed"] * 0.15 + game["upgrades"]["moon_silo"] * 0.35
+    return (herd_rate + auto) * multiplier
+
+
+def tick_game():
+    game = st.session_state.game
+    now = time.time()
+    elapsed = max(0.0, min(now - game["last_tick"], 30.0))
+    rate = milk_per_second()
+    gained = elapsed * rate
+    game["milk"] += gained
+    game["lifetime_milk"] += gained
+    game["last_tick"] = now
+    game["tick_count"] += 1
+
+    if game["tick_count"] % 8 == 0:
+        for cow in game["cows"]:
+            cow["happiness"] = max(3, min(10, cow["happiness"] + random.choice([-1, 0, 1])))
+            cow["mood"] = random.choice(MOODS)
+        mood_pool = [
+            "A cow stared at the horizon like she understood the stock market.",
+            "The milking pipes hummed like a tiny space station.",
+            "Someone in the herd is clearly unionizing, but production is still up.",
+            "A perfect patch of clover was discovered near the fence.",
+        ]
+        game["theme_msg"] = random.choice(mood_pool)
+
+    extra_capacity = game["upgrades"]["extra_stall"]
+    game["capacity"] = 4 + extra_capacity
+
+    while len(game["cows"]) < min(game["capacity"], 2 + game["upgrades"]["extra_stall"]):
+        add_cow(auto=True)
+
+
+ensure_game()
+tick_game()
 game = st.session_state.game
+rate = milk_per_second()
 
 st.markdown(
     """
     <div class="hero">
-        <h1>🐮 Moonmilk Ranch</h1>
+        <h1>🐄 Idle Moo Empire</h1>
         <p>
-            Run a tiny, slightly ridiculous dairy empire. Keep your cows happy, manage hay,
-            milk the herd, buy upgrades, and see how absurdly prosperous your ranch becomes.
+            Build a ridiculous passive-income dairy operation. Tap to milk, hire automation,
+            expand the barn, stack upgrades, and let the cows generate wealth while you bask in
+            the soft glow of agricultural absurdity.
         </p>
         <div class="pill-row">
-            <div class="pill">Farm management</div>
-            <div class="pill">Cow moods</div>
-            <div class="pill">Milk economy</div>
-            <div class="pill">Tiny chaos</div>
+            <div class="pill">Idle game</div>
+            <div class="pill">Passive milk income</div>
+            <div class="pill">Cow upgrades</div>
+            <div class="pill">Barn automation</div>
         </div>
     </div>
     """,
@@ -244,11 +324,11 @@ st.markdown(
 
 m1, m2, m3, m4, m5 = st.columns(5)
 metrics = [
-    ("Day", game["day"], "Another sunrise over the barn"),
-    ("Coins", game["coins"], "Spend these on supplies and upgrades"),
-    ("Milk", game["milk"], "Freshly collected inventory"),
-    ("Hay", game["hay"], "Cow-approved snacks on hand"),
-    ("Score", game["score"], "Your ranching legend"),
+    ("Milk", format_num(game["milk"]), "Current liquid glory"),
+    ("Coins", format_num(game["coins"]), "Spend to scale the ranch"),
+    ("Milk / sec", format_num(rate), "Passive production rate"),
+    ("Cows", f"{len(game['cows'])}/{game['capacity']}", "Occupied stalls"),
+    ("Lifetime milk", format_num(game["lifetime_milk"]), "All-time output"),
 ]
 for col, (label, value, sub) in zip([m1, m2, m3, m4, m5], metrics):
     with col:
@@ -263,154 +343,142 @@ for col, (label, value, sub) in zip([m1, m2, m3, m4, m5], metrics):
             unsafe_allow_html=True,
         )
 
-left, right = st.columns([1.2, 0.95], gap="large")
+left, right = st.columns([1.1, 1.0], gap="large")
 
 with left:
-    st.markdown("## Herd status")
-    for idx, cow in enumerate(game["cows"]):
+    st.markdown("## Milking floor")
+    st.markdown('<div class="panel">', unsafe_allow_html=True)
+    st.markdown(f"**Barn status:** {game['theme_msg']}")
+
+    if st.button(f"🥛 Milk the herd manually (+{format_num(game['click_power'])})", use_container_width=True, type="primary"):
+        game["milk"] += game["click_power"]
+        game["lifetime_milk"] += game["click_power"]
+        add_log("You did a hands-on milk run. The buckets salute you.")
+
+    sell_cols = st.columns(3)
+    with sell_cols[0]:
+        if st.button("Sell 25 milk", use_container_width=True):
+            if game["milk"] >= 25:
+                game["milk"] -= 25
+                game["coins"] += 15
+                add_log("Sold 25 milk for 15 coins. A respectable moo-vement.")
+            else:
+                add_log("Not enough milk for that sale.")
+    with sell_cols[1]:
+        if st.button("Sell 100 milk", use_container_width=True):
+            if game["milk"] >= 100:
+                game["milk"] -= 100
+                game["coins"] += 68
+                add_log("Sold 100 milk in bulk for 68 coins. The market loves your cows.")
+            else:
+                add_log("You need 100 milk for the bulk buyer.")
+    with sell_cols[2]:
+        if st.button("Sell all milk", use_container_width=True):
+            if game["milk"] >= 1:
+                sold = game["milk"]
+                earnings = sold * 0.62
+                game["milk"] = 0
+                game["coins"] += earnings
+                add_log(f"Liquidated {format_num(sold)} milk for {format_num(earnings)} coins.")
+            else:
+                add_log("There is no milk to sell. The truck left empty.")
+
+    st.markdown("### Herd")
+    for cow in game["cows"]:
         st.markdown('<div class="cow-card">', unsafe_allow_html=True)
+        st.markdown(f"<div class='cow-name'>{cow['name']} · {cow['mood']}</div>", unsafe_allow_html=True)
         st.markdown(
-            f"<div class='cow-name'>{cow['name']} <span style='font-size:0.95rem'>· {cow['mood']}</span></div>",
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            f"<div class='cow-meta'>Happiness: {cow['happiness']}/10 · Energy: {cow['energy']}/10 · Milk ready: {cow['milk_ready']}</div>",
+            f"<div class='cow-meta'>Base rate: {cow['base_rate']:.2f}/sec · Happiness: {cow['happiness']}/10 · Effective contribution: {cow['base_rate'] * (0.65 + cow['happiness'] / 10):.2f}/sec</div>",
             unsafe_allow_html=True,
         )
         st.progress(cow["happiness"] / 10, text=f"{cow['name']} happiness")
-        st.progress(cow["energy"] / 10, text=f"{cow['name']} energy")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("## Barn actions")
-    a1, a2, a3, a4 = st.columns(4)
-
-    with a1:
-        if st.button("🌾 Feed herd", use_container_width=True):
-            if game["hay"] < len(game["cows"]):
-                add_log("Not enough hay. The cows stared at you like disappointed landlords.")
-            else:
-                bonus = 2 if "Fancy Feed" in game["upgrades"] else 0
-                game["hay"] -= len(game["cows"])
-                for cow in game["cows"]:
-                    cow["happiness"] = min(10, cow["happiness"] + 2 + bonus)
-                    cow["energy"] = min(10, cow["energy"] + 1)
-                game["score"] += 5
-                add_log("You fed the herd. Spirits rose. Chewing sounds became majestic.")
-
-    with a2:
-        if st.button("🥛 Milk cows", use_container_width=True):
-            milk_gain = 0
-            bonus = 6 if "Turbo Milker" in game["upgrades"] else 0
-            for cow in game["cows"]:
-                collected = max(0, int(cow["milk_ready"] * (0.6 + cow["happiness"] / 20)))
-                milk_gain += collected
-                cow["milk_ready"] = max(1, cow["milk_ready"] - collected // 2)
-                cow["energy"] = max(1, cow["energy"] - 1)
-            milk_gain += bonus
-            game["milk"] += milk_gain
-            game["score"] += milk_gain
-            add_log(f"You milked the herd and collected {milk_gain} units. The buckets are thriving.")
-
-    with a3:
-        if st.button("🛒 Sell milk", use_container_width=True):
-            if game["milk"] < 8:
-                add_log("You need at least 8 milk to make a proper market run.")
-            else:
-                sold = min(game["milk"], 20)
-                price = random.randint(3, 5)
-                earnings = sold * price
-                game["milk"] -= sold
-                game["coins"] += earnings
-                game["score"] += earnings // 2
-                add_log(f"You sold {sold} milk for {earnings} coins at {price} each. Capitalism, but pastoral.")
-
-    with a4:
-        if st.button("🌙 Next day", use_container_width=True):
-            next_day()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with right:
-    st.markdown('<div class="panel">', unsafe_allow_html=True)
-    st.markdown("## Supplies and upgrades")
+    st.markdown("## Upgrades")
+    for key, details in UPGRADES.items():
+        level = game["upgrades"][key]
+        cost = next_upgrade_cost(key, level)
+        st.markdown('<div class="upgrade-card">', unsafe_allow_html=True)
+        st.markdown(f"**{details['label']}** · Level {level}")
+        st.markdown(f"<div class='upgrade-meta'>{details['desc']}</div>", unsafe_allow_html=True)
+        u1, u2 = st.columns([1.6, 0.9])
+        with u1:
+            st.caption(f"Next cost: {cost} coins")
+        with u2:
+            if st.button(f"Buy {details['label']}", key=f"buy_{key}", use_container_width=True):
+                if game["coins"] >= cost:
+                    game["coins"] -= cost
+                    game["upgrades"][key] += 1
+                    if key == "extra_stall" and len(game["cows"]) < game["capacity"]:
+                        add_cow(auto=True)
+                    if key == "premium_feed":
+                        for cow in game["cows"]:
+                            cow["happiness"] = min(10, cow["happiness"] + 1)
+                    if key == "barn_robot":
+                        game["click_power"] += 1.5
+                    add_log(f"Purchased {details['label']} level {game['upgrades'][key]}.")
+                else:
+                    add_log(f"Need {cost} coins for {details['label']}.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    c1, c2 = st.columns(2)
-    with c1:
-        if st.button("Buy 5 hay · 15 coins", use_container_width=True):
-            if game["coins"] >= 15:
-                game["coins"] -= 15
-                game["hay"] += 5
-                add_log("You bought 5 hay. The barn now feels responsibly stocked.")
+    st.markdown("## Expansion")
+    exp1, exp2 = st.columns(2)
+    next_cow_cost = 35 + (len(game["cows"]) - 2) * 18
+    with exp1:
+        if st.button(f"Buy cow · {next_cow_cost} coins", use_container_width=True):
+            if len(game["cows"]) >= game["capacity"]:
+                add_log("No room in the barn. Buy Extra Stall first.")
+            elif game["coins"] >= next_cow_cost:
+                game["coins"] -= next_cow_cost
+                add_cow(auto=False)
             else:
-                add_log("Not enough coins for hay. The feed store clerk looked unimpressed.")
-
-    with c2:
-        if st.button("Adopt mystery cow · 80 coins", use_container_width=True):
-            if game["coins"] >= 80:
-                game["coins"] -= 80
-                used_names = {cow["name"] for cow in game["cows"]}
-                choices = [name for name in COW_NAMES if name not in used_names] or COW_NAMES
-                new_name = random.choice(choices)
-                game["cows"].append(
-                    {
-                        "name": new_name,
-                        "happiness": random.randint(5, 9),
-                        "energy": random.randint(5, 9),
-                        "milk_ready": random.randint(4, 8),
-                        "mood": random.choice(MOODS),
-                    }
-                )
-                game["score"] += 20
-                add_log(f"A new cow named {new_name} joined the ranch. Morale and hoof traffic increased.")
+                add_log("Not enough coins for another cow.")
+    with exp2:
+        click_upgrade_cost = int(20 + game["click_power"] * 18)
+        if st.button(f"Upgrade bucket hands · {click_upgrade_cost} coins", use_container_width=True):
+            if game["coins"] >= click_upgrade_cost:
+                game["coins"] -= click_upgrade_cost
+                game["click_power"] += 1
+                add_log(f"Manual milking improved. Click power is now {game['click_power']:.1f}.")
             else:
-                add_log("Not enough coins to adopt a new cow yet.")
+                add_log("Your arms remain ordinary for now.")
 
-    st.markdown("### Upgrades")
-    for name, details in UPGRADES.items():
-        owned = name in game["upgrades"]
-        col_a, col_b = st.columns([1.8, 0.9])
-        with col_a:
-            st.markdown(f"**{name}**  ")
-            st.caption(f"{details['effect']} Cost: {details['cost']} coins.")
-        with col_b:
-            if owned:
-                st.success("Owned")
-            else:
-                if st.button(f"Buy {name}", key=f"buy_{name}", use_container_width=True):
-                    if game["coins"] >= details["cost"]:
-                        game["coins"] -= details["cost"]
-                        game["upgrades"].append(name)
-                        game["score"] += 15
-                        add_log(f"Upgrade unlocked: {name}. The ranch feels suspiciously professional.")
-                    else:
-                        add_log(f"Not enough coins for {name}.")
-
-    st.markdown("### Barn gossip")
-    for item in game["log"][:6]:
+    st.markdown("## Barn log")
+    st.markdown('<div class="log-card">', unsafe_allow_html=True)
+    for item in game["log"]:
         st.markdown(f"<div class='barn-log'>{item}</div>", unsafe_allow_html=True)
-
     st.markdown(
         """
         <div class="tip">
-            <strong>How to win:</strong> keep the herd happy, milk often, sell at good moments,
-            and stack upgrades before your little dairy kingdom descends into beautiful nonsense.
+            <strong>Idle strategy:</strong> buy early passive income first, then add stall capacity,
+            then scale with multipliers. Tiny dairy capitalism rewards patience.
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("## Ranch goals")
-goal1, goal2, goal3 = st.columns(3)
-with goal1:
-    st.checkbox("Reach 250 coins", value=game["coins"] >= 250, disabled=True)
-with goal2:
-    st.checkbox("Own 5 cows", value=len(game["cows"]) >= 5, disabled=True)
-with goal3:
-    st.checkbox("Score 500 points", value=game["score"] >= 500, disabled=True)
+st.markdown("## Milestones")
+milestone_cols = st.columns(4)
+milestones = [
+    ("100 milk", game["lifetime_milk"] >= 100),
+    ("250 coins", game["coins"] >= 250),
+    ("6 cows", len(game["cows"]) >= 6),
+    ("50 milk/sec", rate >= 50),
+]
+for col, (label, reached) in zip(milestone_cols, milestones):
+    with col:
+        st.checkbox(label, value=reached, disabled=True)
 
-if game["coins"] >= 250 and len(game["cows"]) >= 5 and game["score"] >= 500:
-    st.success("You built a thriving moonlit milk empire. Frankly, the cows expect a statue.")
-
-with st.expander("Restart game"):
-    if st.button("Reset Moonmilk Ranch", type="primary"):
-        del st.session_state["game"]
-        st.rerun()
+with st.expander("Game controls"):
+    ctrl1, ctrl2 = st.columns(2)
+    with ctrl1:
+        if st.button("Refresh idle progress", use_container_width=True):
+            st.rerun()
+    with ctrl2:
+        if st.button("Reset empire", type="primary", use_container_width=True):
+            del st.session_state["game"]
+            st.rerun()
