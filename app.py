@@ -1,127 +1,297 @@
-from datetime import datetime, timedelta
-
-import pandas as pd
 import streamlit as st
-import yfinance as yf
 
-st.set_page_config(page_title="HP Stock Report", page_icon="📈", layout="wide")
+st.set_page_config(
+    page_title="OpenClaw Setup Guide",
+    page_icon="🦞",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
-TICKER = "HPQ"
-EVENTS = [
+st.markdown(
+    """
+    <style>
+        .stApp {
+            background:
+                radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 28%),
+                radial-gradient(circle at left top, rgba(167, 139, 250, 0.16), transparent 30%),
+                linear-gradient(180deg, #0b1020 0%, #111827 45%, #0f172a 100%);
+            color: #e5eefc;
+        }
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+            max-width: 1100px;
+        }
+        .hero {
+            padding: 2rem 2rem 1.5rem 2rem;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.75));
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+            margin-bottom: 1.2rem;
+        }
+        .hero h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            line-height: 1.05;
+            color: #f8fafc;
+        }
+        .hero p {
+            margin: 0.8rem 0 0 0;
+            font-size: 1.05rem;
+            color: #cbd5e1;
+        }
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin-top: 1rem;
+        }
+        .pill {
+            padding: 0.45rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(96, 165, 250, 0.24);
+            color: #dbeafe;
+            font-size: 0.9rem;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.62);
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 20px;
+            padding: 1.15rem 1.2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+        }
+        .step-card {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.72));
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 20px;
+            padding: 1rem 1rem 0.65rem 1rem;
+            margin-bottom: 0.95rem;
+        }
+        .step-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #f8fafc;
+            margin-bottom: 0.3rem;
+        }
+        .muted {
+            color: #94a3b8;
+            font-size: 0.92rem;
+        }
+        .code-chip {
+            display: inline-block;
+            margin-top: 0.35rem;
+            padding: 0.42rem 0.7rem;
+            border-radius: 10px;
+            background: rgba(2, 6, 23, 0.82);
+            border: 1px solid rgba(71, 85, 105, 0.7);
+            color: #bfdbfe;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 0.9rem;
+        }
+        .section-header {
+            margin: 0.35rem 0 0.8rem 0;
+            color: #f8fafc;
+        }
+        .small-note {
+            font-size: 0.86rem;
+            color: #94a3b8;
+        }
+        .progress-wrap {
+            margin-top: 0.35rem;
+            margin-bottom: 1rem;
+        }
+        div[data-testid="stCheckbox"] label p {
+            color: #e2e8f0 !important;
+            font-size: 0.98rem !important;
+        }
+        .footer-card {
+            margin-top: 1rem;
+            padding: 1rem 1.1rem;
+            border-radius: 18px;
+            background: rgba(14, 165, 233, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+steps = [
     {
-        "date": "2025-05-29",
-        "title": "Q2 FY25 earnings",
-        "detail": "HP reported quarterly earnings and updated investors on cost discipline and market conditions.",
+        "title": "Install Node.js LTS",
+        "body": "Download and install the current LTS release of Node.js for Windows. Accept the default installer options so npm is installed too.",
+        "check": "Node.js installed",
+        "command": "node -v",
     },
     {
-        "date": "2025-08-28",
-        "title": "Q3 FY25 earnings",
-        "detail": "Quarterly results highlighted printing/PC trends and AI PC commentary.",
+        "title": "Open PowerShell as your normal user",
+        "body": "Use a regular PowerShell window first. Only elevate later if Windows prompts you during setup.",
+        "check": "PowerShell open",
+        "command": "powershell",
     },
     {
-        "date": "2025-11-26",
-        "title": "Q4 / full-year update",
-        "detail": "HP closed the fiscal year and provided its latest outlook.",
+        "title": "Install OpenClaw globally",
+        "body": "Install OpenClaw from npm so the command is available anywhere on the machine.",
+        "check": "OpenClaw installed",
+        "command": "npm install -g openclaw",
     },
     {
-        "date": "2026-02-27",
-        "title": "Q1 FY26 earnings window",
-        "detail": "Typical period for the next major earnings-driven move and analyst reassessment.",
+        "title": "Confirm the install works",
+        "body": "Verify the CLI responds before doing any configuration.",
+        "check": "CLI verified",
+        "command": "openclaw --help",
+    },
+    {
+        "title": "Start the gateway service",
+        "body": "Launch the OpenClaw gateway so the local services, web dashboard, and connectors can run.",
+        "check": "Gateway started",
+        "command": "openclaw gateway start",
+    },
+    {
+        "title": "Open the dashboard in a browser",
+        "body": "Once the gateway is up, open the local web dashboard and keep it bookmarked.",
+        "check": "Dashboard opened",
+        "command": "http://localhost:3000",
+    },
+    {
+        "title": "Create or sign in to the OpenAI-compatible provider account used by OpenClaw",
+        "body": "Have the API key ready before wiring up chats. If your company uses a specific provider/model, use that one.",
+        "check": "API key ready",
+        "command": "Paste the key into OpenClaw settings when prompted",
+    },
+    {
+        "title": "Configure the model/provider in OpenClaw",
+        "body": "Open the dashboard settings and add the API key plus the preferred default model. Save before moving on.",
+        "check": "Model configured",
+        "command": "Use the Settings page in the dashboard",
+    },
+    {
+        "title": "Create a Telegram bot with BotFather",
+        "body": "In Telegram, message @BotFather, run /newbot, choose a name, and copy the bot token it gives you.",
+        "check": "Telegram bot token created",
+        "command": "Telegram → @BotFather → /newbot",
+    },
+    {
+        "title": "Add Telegram credentials to OpenClaw",
+        "body": "In the OpenClaw dashboard or config, enable Telegram and paste the bot token so the chat connector can come online.",
+        "check": "Telegram connected",
+        "command": "Use the dashboard integrations/config for Telegram",
+    },
+    {
+        "title": "Message the bot from Telegram",
+        "body": "Send the bot a test message like /start or hello and confirm OpenClaw receives it.",
+        "check": "Telegram test passed",
+        "command": "Send a Telegram message to the bot",
+    },
+    {
+        "title": "Verify web chat works too",
+        "body": "Use the dashboard chat interface to send a test prompt and confirm both Telegram and the web UI are working.",
+        "check": "Web dashboard chat tested",
+        "command": "Send a test prompt in the dashboard",
     },
 ]
 
-@st.cache_data(ttl=3600)
-def load_history():
-    end = datetime.utcnow()
-    start = end - timedelta(days=370)
-    history = yf.download(TICKER, start=start, end=end, auto_adjust=True, progress=False)
-    if history.empty:
-        raise ValueError("No market data returned for HPQ.")
+completed = 0
+for i, step in enumerate(steps):
+    if st.session_state.get(f"step_{i}", False):
+        completed += 1
 
-    if isinstance(history.columns, pd.MultiIndex):
-        history.columns = [col[0] for col in history.columns]
+progress = completed / len(steps)
 
-    history = history.reset_index()
-    history["Date"] = pd.to_datetime(history["Date"])
-    return history
+st.markdown(
+    """
+    <div class="hero">
+        <h1>OpenClaw setup for a new Windows machine</h1>
+        <p>
+            A clean, boss-friendly walkthrough for getting OpenClaw installed and working with
+            <strong>Telegram</strong> plus the <strong>web dashboard</strong>.
+        </p>
+        <div class="pill-row">
+            <div class="pill">Windows setup</div>
+            <div class="pill">Telegram chat</div>
+            <div class="pill">Web dashboard</div>
+            <div class="pill">Step-by-step checklist</div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-
-def nearest_close(history: pd.DataFrame, target_date: pd.Timestamp):
-    idx = (history["Date"] - target_date).abs().idxmin()
-    row = history.loc[idx]
-    return row["Date"], float(row["Close"])
-
-
-st.title("HP Stock Performance Report")
-st.caption("One-year view of HP Inc. (NYSE: HPQ) with annotated major events.")
-
-try:
-    history = load_history()
-except Exception as exc:
-    st.error(f"Could not load HPQ data: {exc}")
-    st.stop()
-
-start_close = float(history.iloc[0]["Close"])
-end_close = float(history.iloc[-1]["Close"])
-change_pct = ((end_close / start_close) - 1) * 100
-high_close = float(history["Close"].max())
-low_close = float(history["Close"].min())
-avg_volume = int(history["Volume"].mean())
-
-m1, m2, m3, m4 = st.columns(4)
-m1.metric("1Y change", f"{change_pct:+.1f}%")
-m2.metric("Latest close", f"${end_close:.2f}")
-m3.metric("1Y range", f"${low_close:.2f} - ${high_close:.2f}")
-m4.metric("Avg volume", f"{avg_volume:,}")
-
-st.subheader("Price trend")
-recent_points = history[["Date", "Close"]].tail(18).copy()
-peak_close = max(recent_points["Close"].max(), 1)
-for _, row in recent_points.iterrows():
-    width_pct = max(8, int((float(row["Close"]) / peak_close) * 100))
-    st.markdown(
-        f"<div style='margin-bottom:0.35rem'><div style='font-size:0.82rem;color:#6b7280'>{row['Date'].date()}</div>"
-        f"<div style='background:#e5e7eb;border-radius:999px;height:14px;overflow:hidden'>"
-        f"<div style='width:{width_pct}%;background:linear-gradient(90deg,#1d4ed8,#60a5fa);height:14px'></div></div>"
-        f"<div style='font-size:0.82rem;font-weight:600'>${float(row['Close']):.2f}</div></div>",
-        unsafe_allow_html=True,
-    )
-
-event_rows = []
-for event in EVENTS:
-    target = pd.Timestamp(event["date"])
-    actual_date, actual_close = nearest_close(history, target)
-    event_rows.append(
-        {
-            "Event date": actual_date.date().isoformat(),
-            "Event": event["title"],
-            "Close": round(actual_close, 2),
-            "Notes": event["detail"],
-        }
-    )
-
-events_df = pd.DataFrame(event_rows)
-
-left, right = st.columns([1.2, 1])
-with left:
-    st.subheader("Annotated major events")
-    st.dataframe(events_df, use_container_width=True, hide_index=True)
+left, right = st.columns([1.45, 0.9], gap="large")
 
 with right:
-    st.subheader("Quick read")
-    direction = "up" if change_pct >= 0 else "down"
+    st.markdown('<div class="glass">', unsafe_allow_html=True)
+    st.subheader("Checklist progress")
     st.markdown(
-        f"""
-        - Over the last year, HPQ is **{direction} {abs(change_pct):.1f}%**.
-        - The stock traded between **${low_close:.2f}** and **${high_close:.2f}**.
-        - Major movement windows often line up with **earnings releases and guidance updates**.
-        - This is a compact performance summary, not full investment advice.
+        f"<div class='small-note'>{completed} of {len(steps)} steps complete</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown('<div class="progress-wrap">', unsafe_allow_html=True)
+    st.progress(progress)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("### What your boss needs ready")
+    st.markdown(
+        """
+        - A Windows machine with internet access
+        - Permission to install apps
+        - An API key for the AI provider
+        - A Telegram account for bot setup
         """
     )
 
-st.subheader("Recent closes")
-recent = history[["Date", "Close", "Volume"]].tail(20).copy()
-recent["Date"] = recent["Date"].dt.date.astype(str)
-recent["Close"] = recent["Close"].map(lambda x: f"${float(x):.2f}")
-recent["Volume"] = recent["Volume"].map(lambda x: f"{int(x):,}")
-st.dataframe(recent, use_container_width=True, hide_index=True)
+    st.markdown("### Quick commands")
+    st.code(
+        "npm install -g openclaw\nopenclaw gateway start\nopenclaw --help",
+        language="powershell",
+    )
+
+    if completed == len(steps):
+        st.success("Everything on the list is checked. The machine should be ready for Telegram and dashboard chat.")
+    else:
+        st.info("Work top to bottom. If something fails, stop there and fix that step before continuing.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+with left:
+    st.markdown("## Step-by-step walkthrough")
+    for i, step in enumerate(steps, start=1):
+        st.markdown('<div class="step-card">', unsafe_allow_html=True)
+        st.markdown(
+            f"<div class='step-title'>Step {i}. {step['title']}</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(f"<div class='muted'>{step['body']}</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div class='code-chip'>{step['command']}</div>",
+            unsafe_allow_html=True,
+        )
+        st.checkbox(step["check"], key=f"step_{i-1}")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("## Final handoff")
+st.markdown(
+    """
+    <div class="footer-card">
+        After setup, your boss should be able to:<br><br>
+        ✅ open the local OpenClaw dashboard<br>
+        ✅ chat through the web interface<br>
+        ✅ send messages to the Telegram bot<br>
+        ✅ manage the local gateway from the CLI if needed
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+with st.expander("Troubleshooting notes"):
+    st.markdown(
+        """
+        - If `openclaw` is not recognized, close and reopen PowerShell after the npm install.
+        - If the dashboard does not load, run `openclaw gateway status` and restart it if needed.
+        - If Telegram does not respond, double-check the bot token and whether Telegram was enabled in config.
+        - Keep the guide simple: install first, provider second, Telegram third, test everything last.
+        """
+    )
