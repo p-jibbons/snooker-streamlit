@@ -1,8 +1,10 @@
+import random
+
 import streamlit as st
 
 st.set_page_config(
-    page_title="OpenClaw Setup Guide",
-    page_icon="🦞",
+    page_title="Moonmilk Ranch",
+    page_icon="🐮",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -12,286 +14,368 @@ st.markdown(
     <style>
         .stApp {
             background:
-                radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 28%),
-                radial-gradient(circle at left top, rgba(167, 139, 250, 0.16), transparent 30%),
-                linear-gradient(180deg, #0b1020 0%, #111827 45%, #0f172a 100%);
-            color: #e5eefc;
+                radial-gradient(circle at top left, rgba(253, 224, 71, 0.15), transparent 25%),
+                radial-gradient(circle at top right, rgba(45, 212, 191, 0.12), transparent 30%),
+                linear-gradient(180deg, #0f172a 0%, #152238 45%, #1e293b 100%);
+            color: #f8fafc;
         }
         .block-container {
-            padding-top: 2rem;
-            padding-bottom: 3rem;
-            max-width: 1100px;
+            max-width: 1120px;
+            padding-top: 1.6rem;
+            padding-bottom: 2.5rem;
         }
         .hero {
-            padding: 2rem 2rem 1.5rem 2rem;
+            border-radius: 28px;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.82));
             border: 1px solid rgba(148, 163, 184, 0.18);
-            background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.75));
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
-            margin-bottom: 1.2rem;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+            margin-bottom: 1rem;
         }
         .hero h1 {
             margin: 0;
-            font-size: 2.5rem;
-            line-height: 1.05;
-            color: #f8fafc;
+            font-size: 2.8rem;
+            color: #fff7ed;
         }
         .hero p {
-            margin: 0.8rem 0 0 0;
-            font-size: 1.05rem;
-            color: #cbd5e1;
+            margin-top: 0.7rem;
+            color: #dbeafe;
+            font-size: 1.02rem;
+            max-width: 750px;
         }
         .pill-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.65rem;
+            gap: 0.55rem;
             margin-top: 1rem;
         }
         .pill {
-            padding: 0.45rem 0.8rem;
+            padding: 0.42rem 0.82rem;
             border-radius: 999px;
-            background: rgba(59, 130, 246, 0.12);
-            border: 1px solid rgba(96, 165, 250, 0.24);
-            color: #dbeafe;
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            color: #fde68a;
             font-size: 0.9rem;
         }
-        .glass {
-            background: rgba(15, 23, 42, 0.62);
+        .panel {
+            background: rgba(15, 23, 42, 0.72);
             border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 22px;
+            padding: 1rem 1.1rem;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+        }
+        .metric-card {
             border-radius: 20px;
-            padding: 1.15rem 1.2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            padding: 1rem;
+            background: linear-gradient(180deg, rgba(30,41,59,0.92), rgba(15,23,42,0.85));
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            min-height: 110px;
         }
-        .step-card {
-            background: linear-gradient(180deg, rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.72));
-            border: 1px solid rgba(148, 163, 184, 0.16);
-            border-radius: 20px;
-            padding: 1rem 1rem 0.65rem 1rem;
-            margin-bottom: 0.95rem;
-        }
-        .step-title {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #f8fafc;
-            margin-bottom: 0.3rem;
-        }
-        .muted {
+        .metric-label {
             color: #94a3b8;
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .metric-value {
+            color: #fef3c7;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-top: 0.35rem;
+        }
+        .metric-sub {
+            color: #cbd5e1;
+            font-size: 0.92rem;
+            margin-top: 0.18rem;
+        }
+        .cow-card {
+            background: linear-gradient(180deg, rgba(22, 30, 46, 0.95), rgba(15, 23, 42, 0.82));
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 0.85rem;
+        }
+        .cow-name {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .cow-meta {
+            color: #cbd5e1;
             font-size: 0.92rem;
         }
-        .code-chip {
-            display: inline-block;
-            margin-top: 0.35rem;
-            padding: 0.42rem 0.7rem;
-            border-radius: 10px;
-            background: rgba(2, 6, 23, 0.82);
-            border: 1px solid rgba(71, 85, 105, 0.7);
-            color: #bfdbfe;
-            font-family: Consolas, Monaco, monospace;
-            font-size: 0.9rem;
+        .barn-log {
+            padding: 0.9rem 1rem;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            color: #dbeafe;
+            margin-bottom: 0.55rem;
         }
-        .section-header {
-            margin: 0.35rem 0 0.8rem 0;
-            color: #f8fafc;
-        }
-        .small-note {
-            font-size: 0.86rem;
-            color: #94a3b8;
-        }
-        .progress-wrap {
-            margin-top: 0.35rem;
-            margin-bottom: 1rem;
-        }
-        div[data-testid="stCheckbox"] label p {
-            color: #e2e8f0 !important;
-            font-size: 0.98rem !important;
-        }
-        .footer-card {
-            margin-top: 1rem;
-            padding: 1rem 1.1rem;
-            border-radius: 18px;
-            background: rgba(14, 165, 233, 0.08);
-            border: 1px solid rgba(56, 189, 248, 0.22);
+        .tip {
+            margin-top: 0.9rem;
+            padding: 0.85rem 1rem;
+            border-radius: 16px;
+            background: rgba(16, 185, 129, 0.09);
+            border: 1px solid rgba(52, 211, 153, 0.22);
+            color: #d1fae5;
         }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-steps = [
-    {
-        "title": "Install Node.js LTS",
-        "body": "Download and install the current LTS release of Node.js for Windows. Accept the default installer options so npm is installed too.",
-        "check": "Node.js installed",
-        "command": "node -v",
-    },
-    {
-        "title": "Open PowerShell as your normal user",
-        "body": "Use a regular PowerShell window first. Only elevate later if Windows prompts you during setup.",
-        "check": "PowerShell open",
-        "command": "powershell",
-    },
-    {
-        "title": "Install OpenClaw globally",
-        "body": "Install OpenClaw from npm so the command is available anywhere on the machine.",
-        "check": "OpenClaw installed",
-        "command": "npm install -g openclaw",
-    },
-    {
-        "title": "Confirm the install works",
-        "body": "Verify the CLI responds before doing any configuration.",
-        "check": "CLI verified",
-        "command": "openclaw --help",
-    },
-    {
-        "title": "Start the gateway service",
-        "body": "Launch the OpenClaw gateway so the local services, web dashboard, and connectors can run.",
-        "check": "Gateway started",
-        "command": "openclaw gateway start",
-    },
-    {
-        "title": "Open the dashboard in a browser",
-        "body": "Once the gateway is up, open the local web dashboard and keep it bookmarked.",
-        "check": "Dashboard opened",
-        "command": "http://localhost:3000",
-    },
-    {
-        "title": "Create or sign in to the OpenAI-compatible provider account used by OpenClaw",
-        "body": "Have the API key ready before wiring up chats. If your company uses a specific provider/model, use that one.",
-        "check": "API key ready",
-        "command": "Paste the key into OpenClaw settings when prompted",
-    },
-    {
-        "title": "Configure the model/provider in OpenClaw",
-        "body": "Open the dashboard settings and add the API key plus the preferred default model. Save before moving on.",
-        "check": "Model configured",
-        "command": "Use the Settings page in the dashboard",
-    },
-    {
-        "title": "Create a Telegram bot with BotFather",
-        "body": "In Telegram, message @BotFather, run /newbot, choose a name, and copy the bot token it gives you.",
-        "check": "Telegram bot token created",
-        "command": "Telegram → @BotFather → /newbot",
-    },
-    {
-        "title": "Add Telegram credentials to OpenClaw",
-        "body": "In the OpenClaw dashboard or config, enable Telegram and paste the bot token so the chat connector can come online.",
-        "check": "Telegram connected",
-        "command": "Use the dashboard integrations/config for Telegram",
-    },
-    {
-        "title": "Message the bot from Telegram",
-        "body": "Send the bot a test message like /start or hello and confirm OpenClaw receives it.",
-        "check": "Telegram test passed",
-        "command": "Send a Telegram message to the bot",
-    },
-    {
-        "title": "Verify web chat works too",
-        "body": "Use the dashboard chat interface to send a test prompt and confirm both Telegram and the web UI are working.",
-        "check": "Web dashboard chat tested",
-        "command": "Send a test prompt in the dashboard",
-    },
+COW_NAMES = [
+    "Bessie", "Mochi", "Daisy", "Nugget", "Pepper", "Luna", "Butters", "Clover",
+    "Pudding", "Maple", "Junebug", "Truffle", "Hazel", "Toffee", "Mabel", "Sprout",
 ]
+MOODS = ["sleepy", "bouncy", "dramatic", "focused", "chaotic", "delighted"]
+EVENTS = [
+    ("A local café placed a surprise milk order.", 18),
+    ("One of the cows kicked over a bucket in protest.", -10),
+    ("A golden patch of clover boosted the herd's mood.", 12),
+    ("The moon glowed weirdly and milk output got extra frothy.", 15),
+    ("A raccoon snuck into the barn and stole snacks.", -8),
+    ("Tourists stopped by and tipped for selfies with the cows.", 14),
+]
+UPGRADES = {
+    "Comfy Barn": {"cost": 60, "effect": "Cows gain +1 happiness each turn."},
+    "Turbo Milker": {"cost": 90, "effect": "Milking yields +6 extra milk."},
+    "Fancy Feed": {"cost": 45, "effect": "Feeding restores +2 extra happiness."},
+}
 
-completed = 0
-for i, step in enumerate(steps):
-    if st.session_state.get(f"step_{i}", False):
-        completed += 1
 
-progress = completed / len(steps)
+def init_game():
+    if "game" in st.session_state:
+        return
+    st.session_state.game = {
+        "day": 1,
+        "coins": 120,
+        "milk": 20,
+        "hay": 12,
+        "score": 0,
+        "upgrades": [],
+        "log": ["Welcome to Moonmilk Ranch. The barn smells like ambition and hay."],
+        "cows": [
+            {"name": "Bessie", "happiness": 7, "energy": 6, "milk_ready": 8, "mood": "sleepy"},
+            {"name": "Mochi", "happiness": 8, "energy": 7, "milk_ready": 6, "mood": "bouncy"},
+            {"name": "Daisy", "happiness": 6, "energy": 8, "milk_ready": 7, "mood": "dramatic"},
+        ],
+    }
+
+
+def add_log(message: str):
+    st.session_state.game["log"].insert(0, message)
+    st.session_state.game["log"] = st.session_state.game["log"][:8]
+
+
+def next_day():
+    game = st.session_state.game
+    game["day"] += 1
+    bonus_happiness = 1 if "Comfy Barn" in game["upgrades"] else 0
+
+    for cow in game["cows"]:
+        cow["energy"] = max(2, min(10, cow["energy"] + random.randint(-1, 2)))
+        cow["happiness"] = max(1, min(10, cow["happiness"] + random.randint(-1, 1) + bonus_happiness))
+        cow["milk_ready"] = max(2, min(12, cow["milk_ready"] + random.randint(1, 3)))
+        cow["mood"] = random.choice(MOODS)
+
+    event_text, coin_delta = random.choice(EVENTS)
+    game["coins"] = max(0, game["coins"] + coin_delta)
+    add_log(f"Day {game['day']}: {event_text} ({coin_delta:+} coins)")
+
+
+init_game()
+game = st.session_state.game
 
 st.markdown(
     """
     <div class="hero">
-        <h1>OpenClaw setup for a new Windows machine</h1>
+        <h1>🐮 Moonmilk Ranch</h1>
         <p>
-            A clean, boss-friendly walkthrough for getting OpenClaw installed and working with
-            <strong>Telegram</strong> plus the <strong>web dashboard</strong>.
+            Run a tiny, slightly ridiculous dairy empire. Keep your cows happy, manage hay,
+            milk the herd, buy upgrades, and see how absurdly prosperous your ranch becomes.
         </p>
         <div class="pill-row">
-            <div class="pill">Windows setup</div>
-            <div class="pill">Telegram chat</div>
-            <div class="pill">Web dashboard</div>
-            <div class="pill">Step-by-step checklist</div>
+            <div class="pill">Farm management</div>
+            <div class="pill">Cow moods</div>
+            <div class="pill">Milk economy</div>
+            <div class="pill">Tiny chaos</div>
         </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-left, right = st.columns([1.45, 0.9], gap="large")
+m1, m2, m3, m4, m5 = st.columns(5)
+metrics = [
+    ("Day", game["day"], "Another sunrise over the barn"),
+    ("Coins", game["coins"], "Spend these on supplies and upgrades"),
+    ("Milk", game["milk"], "Freshly collected inventory"),
+    ("Hay", game["hay"], "Cow-approved snacks on hand"),
+    ("Score", game["score"], "Your ranching legend"),
+]
+for col, (label, value, sub) in zip([m1, m2, m3, m4, m5], metrics):
+    with col:
+        st.markdown(
+            f"""
+            <div class="metric-card">
+                <div class="metric-label">{label}</div>
+                <div class="metric-value">{value}</div>
+                <div class="metric-sub">{sub}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-with right:
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
-    st.subheader("Checklist progress")
-    st.markdown(
-        f"<div class='small-note'>{completed} of {len(steps)} steps complete</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown('<div class="progress-wrap">', unsafe_allow_html=True)
-    st.progress(progress)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown("### What your boss needs ready")
-    st.markdown(
-        """
-        - A Windows machine with internet access
-        - Permission to install apps
-        - An API key for the AI provider
-        - A Telegram account for bot setup
-        """
-    )
-
-    st.markdown("### Quick commands")
-    st.code(
-        "npm install -g openclaw\nopenclaw gateway start\nopenclaw --help",
-        language="powershell",
-    )
-
-    if completed == len(steps):
-        st.success("Everything on the list is checked. The machine should be ready for Telegram and dashboard chat.")
-    else:
-        st.info("Work top to bottom. If something fails, stop there and fix that step before continuing.")
-
-    st.markdown("</div>", unsafe_allow_html=True)
+left, right = st.columns([1.2, 0.95], gap="large")
 
 with left:
-    st.markdown("## Step-by-step walkthrough")
-    for i, step in enumerate(steps, start=1):
-        st.markdown('<div class="step-card">', unsafe_allow_html=True)
+    st.markdown("## Herd status")
+    for idx, cow in enumerate(game["cows"]):
+        st.markdown('<div class="cow-card">', unsafe_allow_html=True)
         st.markdown(
-            f"<div class='step-title'>Step {i}. {step['title']}</div>",
+            f"<div class='cow-name'>{cow['name']} <span style='font-size:0.95rem'>· {cow['mood']}</span></div>",
             unsafe_allow_html=True,
         )
-        st.markdown(f"<div class='muted'>{step['body']}</div>", unsafe_allow_html=True)
         st.markdown(
-            f"<div class='code-chip'>{step['command']}</div>",
+            f"<div class='cow-meta'>Happiness: {cow['happiness']}/10 · Energy: {cow['energy']}/10 · Milk ready: {cow['milk_ready']}</div>",
             unsafe_allow_html=True,
         )
-        st.checkbox(step["check"], key=f"step_{i-1}")
+        st.progress(cow["happiness"] / 10, text=f"{cow['name']} happiness")
+        st.progress(cow["energy"] / 10, text=f"{cow['name']} energy")
         st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("## Final handoff")
-st.markdown(
-    """
-    <div class="footer-card">
-        After setup, your boss should be able to:<br><br>
-        ✅ open the local OpenClaw dashboard<br>
-        ✅ chat through the web interface<br>
-        ✅ send messages to the Telegram bot<br>
-        ✅ manage the local gateway from the CLI if needed
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+    st.markdown("## Barn actions")
+    a1, a2, a3, a4 = st.columns(4)
 
-with st.expander("Troubleshooting notes"):
+    with a1:
+        if st.button("🌾 Feed herd", use_container_width=True):
+            if game["hay"] < len(game["cows"]):
+                add_log("Not enough hay. The cows stared at you like disappointed landlords.")
+            else:
+                bonus = 2 if "Fancy Feed" in game["upgrades"] else 0
+                game["hay"] -= len(game["cows"])
+                for cow in game["cows"]:
+                    cow["happiness"] = min(10, cow["happiness"] + 2 + bonus)
+                    cow["energy"] = min(10, cow["energy"] + 1)
+                game["score"] += 5
+                add_log("You fed the herd. Spirits rose. Chewing sounds became majestic.")
+
+    with a2:
+        if st.button("🥛 Milk cows", use_container_width=True):
+            milk_gain = 0
+            bonus = 6 if "Turbo Milker" in game["upgrades"] else 0
+            for cow in game["cows"]:
+                collected = max(0, int(cow["milk_ready"] * (0.6 + cow["happiness"] / 20)))
+                milk_gain += collected
+                cow["milk_ready"] = max(1, cow["milk_ready"] - collected // 2)
+                cow["energy"] = max(1, cow["energy"] - 1)
+            milk_gain += bonus
+            game["milk"] += milk_gain
+            game["score"] += milk_gain
+            add_log(f"You milked the herd and collected {milk_gain} units. The buckets are thriving.")
+
+    with a3:
+        if st.button("🛒 Sell milk", use_container_width=True):
+            if game["milk"] < 8:
+                add_log("You need at least 8 milk to make a proper market run.")
+            else:
+                sold = min(game["milk"], 20)
+                price = random.randint(3, 5)
+                earnings = sold * price
+                game["milk"] -= sold
+                game["coins"] += earnings
+                game["score"] += earnings // 2
+                add_log(f"You sold {sold} milk for {earnings} coins at {price} each. Capitalism, but pastoral.")
+
+    with a4:
+        if st.button("🌙 Next day", use_container_width=True):
+            next_day()
+
+with right:
+    st.markdown('<div class="panel">', unsafe_allow_html=True)
+    st.markdown("## Supplies and upgrades")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Buy 5 hay · 15 coins", use_container_width=True):
+            if game["coins"] >= 15:
+                game["coins"] -= 15
+                game["hay"] += 5
+                add_log("You bought 5 hay. The barn now feels responsibly stocked.")
+            else:
+                add_log("Not enough coins for hay. The feed store clerk looked unimpressed.")
+
+    with c2:
+        if st.button("Adopt mystery cow · 80 coins", use_container_width=True):
+            if game["coins"] >= 80:
+                game["coins"] -= 80
+                used_names = {cow["name"] for cow in game["cows"]}
+                choices = [name for name in COW_NAMES if name not in used_names] or COW_NAMES
+                new_name = random.choice(choices)
+                game["cows"].append(
+                    {
+                        "name": new_name,
+                        "happiness": random.randint(5, 9),
+                        "energy": random.randint(5, 9),
+                        "milk_ready": random.randint(4, 8),
+                        "mood": random.choice(MOODS),
+                    }
+                )
+                game["score"] += 20
+                add_log(f"A new cow named {new_name} joined the ranch. Morale and hoof traffic increased.")
+            else:
+                add_log("Not enough coins to adopt a new cow yet.")
+
+    st.markdown("### Upgrades")
+    for name, details in UPGRADES.items():
+        owned = name in game["upgrades"]
+        col_a, col_b = st.columns([1.8, 0.9])
+        with col_a:
+            st.markdown(f"**{name}**  ")
+            st.caption(f"{details['effect']} Cost: {details['cost']} coins.")
+        with col_b:
+            if owned:
+                st.success("Owned")
+            else:
+                if st.button(f"Buy {name}", key=f"buy_{name}", use_container_width=True):
+                    if game["coins"] >= details["cost"]:
+                        game["coins"] -= details["cost"]
+                        game["upgrades"].append(name)
+                        game["score"] += 15
+                        add_log(f"Upgrade unlocked: {name}. The ranch feels suspiciously professional.")
+                    else:
+                        add_log(f"Not enough coins for {name}.")
+
+    st.markdown("### Barn gossip")
+    for item in game["log"][:6]:
+        st.markdown(f"<div class='barn-log'>{item}</div>", unsafe_allow_html=True)
+
     st.markdown(
         """
-        - If `openclaw` is not recognized, close and reopen PowerShell after the npm install.
-        - If the dashboard does not load, run `openclaw gateway status` and restart it if needed.
-        - If Telegram does not respond, double-check the bot token and whether Telegram was enabled in config.
-        - Keep the guide simple: install first, provider second, Telegram third, test everything last.
-        """
+        <div class="tip">
+            <strong>How to win:</strong> keep the herd happy, milk often, sell at good moments,
+            and stack upgrades before your little dairy kingdom descends into beautiful nonsense.
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("## Ranch goals")
+goal1, goal2, goal3 = st.columns(3)
+with goal1:
+    st.checkbox("Reach 250 coins", value=game["coins"] >= 250, disabled=True)
+with goal2:
+    st.checkbox("Own 5 cows", value=len(game["cows"]) >= 5, disabled=True)
+with goal3:
+    st.checkbox("Score 500 points", value=game["score"] >= 500, disabled=True)
+
+if game["coins"] >= 250 and len(game["cows"]) >= 5 and game["score"] >= 500:
+    st.success("You built a thriving moonlit milk empire. Frankly, the cows expect a statue.")
+
+with st.expander("Restart game"):
+    if st.button("Reset Moonmilk Ranch", type="primary"):
+        del st.session_state["game"]
+        st.rerun()
