@@ -120,6 +120,41 @@ st.markdown(
             border: 1px solid rgba(52, 211, 153, 0.22);
             color: #d1fae5;
         }
+        .stButton > button {
+            background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%) !important;
+            color: #0f172a !important;
+            border: 1px solid rgba(148, 163, 184, 0.5) !important;
+            border-radius: 12px !important;
+            font-weight: 700 !important;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22) !important;
+        }
+        .stButton > button:hover {
+            background: linear-gradient(180deg, #ffffff 0%, #dbeafe 100%) !important;
+            color: #020617 !important;
+            border-color: rgba(96, 165, 250, 0.6) !important;
+        }
+        .stButton > button:focus,
+        .stButton > button:focus-visible {
+            color: #020617 !important;
+            outline: none !important;
+            box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.28) !important;
+        }
+        .stButton > button p,
+        .stButton > button span,
+        .stButton > button div {
+            color: #0f172a !important;
+            font-weight: 700 !important;
+        }
+        .stButton > button[kind="primary"] {
+            background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%) !important;
+            color: #1f2937 !important;
+            border: 1px solid rgba(245, 158, 11, 0.7) !important;
+        }
+        .stButton > button[kind="primary"] p,
+        .stButton > button[kind="primary"] span,
+        .stButton > button[kind="primary"] div {
+            color: #1f2937 !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
